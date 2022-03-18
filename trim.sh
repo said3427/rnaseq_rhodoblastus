@@ -1,6 +1,6 @@
 #!/bin/sh
-#Run by chmod u+x sh/test.sh
-#sh/test.sh
+#Run by chmod u+x sh/trim.sh
+#sh/trim.sh
 echo "Analysis Start"
 
 #trim raw data
