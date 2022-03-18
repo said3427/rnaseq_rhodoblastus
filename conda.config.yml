@@ -1,0 +1,11 @@
+name: rnaseq
+channels:
+  - defaults
+  - bioconda
+dependencies:
+  - python >3
+  - fastp
+  - star
+  - pip:
+    - pandas
+    
