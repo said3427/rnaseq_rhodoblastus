@@ -1,0 +1,36 @@
+cd ~/Deskotp/FYP
+
+Step 1: raw data qc
+Input file: RNAseq/raw_data/Aero_1/Aero_1_1.fq.gz
+run fastqc
+Output file: RNAseq/raw_data/Aero_1/Aero_1_1fastqc.html
+
+Step 2: raw data trimming (first 10 bp)
+Input file: RNAseq/raw_data/Aero_1/Aero_1_1.fq.gz
+run $ sh/test.sh
+Output file: RNAseq/trimmed/triAero_1_1.fq
+
+Step 3: creat genome index
+Input file: JJZ00M.fna out.gtf
+run $ STAR --runThreadN 5 --runMode genomeGenerate --genomeDir Indexed --genomeFastaFiles Annotation/Annotation/JJZ00M.fna --sjdbGTFfile /Users/maxwellhou/Desktop/FYP/Annotation/Annotation/out.gtf
+*JJZ00M.fna modified from JJZ00.fna by reformating into correct fasta formate (new line before < and after)
+*out.gtf created from JJZ00.gff using agat_convert_sp_gff2gtf.pl --gff JJZ00.gtf -o out.gtf
+Output file: Indexed/
+
+Step 4: map (alignment)
+Input file: Indexed/ RNAseq/trimmed/triAero_1_1.fq triAero_1_2.fq
+run $ sh/ma.sh
+Output file: Mapped/Aero_1/
+
+Step 5: sort by coordinate and index bam file
+Input file: Mapped/Aero_1/Aligned.out.bam
+run $ sh/sort.sh
+Output file: Mapped/Aero_1/Aero_1sorted.bam
+
+Step 6: .bam qc #not runned yet, waiting for .bed file
+Input file: Mapped/Aero_1/Aero_1sorted.bam ag.bed
+
+Step 7: create count tabel
+
+Step 8: DE analysis
+???Are _1 _2 _3 biological replicates or techniqule replicates
