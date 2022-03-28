@@ -13,9 +13,9 @@ do mkdir ${dataDir[i-1]}/qc;
 mkdir ${dataDir[i-1]}/qc/clipping;
 echo ${dataDir[i-1]} "Clipping #################################";
 clipping_profile.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam -o ${dataDir[i-1]}/qc/clipping/${dataDir[i-1]} -s "PE";
-mkdir ${dataDir[i-1]}/qc/coverage;
-echo ${dataDir[i-1]} "Coverage #################################";
-geneBody_coverage.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam -o ${dataDir[i-1]}/qc/coverage/${dataDir[i-1]} -r ag.bed;
+#mkdir ${dataDir[i-1]}/qc/coverage;
+#echo ${dataDir[i-1]} "Coverage #################################";
+#geneBody_coverage.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam -o ${dataDir[i-1]}/qc/coverage/${dataDir[i-1]} -r ag.bed;
 mkdir ${dataDir[i-1]}/qc/insertion;
 echo ${dataDir[i-1]} "Insertion #################################";
 insertion_profile.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam -o ${dataDir[i-1]}/qc/insertion/${dataDir[i-1]} -s "PE";
@@ -23,16 +23,16 @@ mkdir ${dataDir[i-1]}/qc/gc;
 echo ${dataDir[i-1]} "GC #################################";
 read_GC.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam -o ${dataDir[i-1]}/qc/gc/${dataDir[i-1]};
 echo ${dataDir[i-1]} "Stat #################################";
-bam_stat.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam > ${dataDir[i-1]}/qc/bam_stat.txt;
+bam_stat.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam > ${dataDir[i-1]}/qc/${dataDir[i-1]}bam_stat.txt;
 echo ${dataDir[i-1]} "Infer #################################";
-infer_experiment.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam -r ag.bed > ${dataDir[i-1]}/qc/infer.txt;
+infer_experiment.py -i ${dataDir[i-1]}/${dataDir[i-1]}sorted.bam -r ag.bed > ${dataDir[i-1]}/qc/${dataDir[i-1]}infer_experiment.txt;
 done;
 
 : '
 
 bam_stat.py
 clipping_profile.py
-geneBody_coverage.py
+geneBody_coverage.py ** Runtime too long
 infer_experiment.py
 inner_distance.py**
 insertion_profile.py
