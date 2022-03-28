@@ -1,36 +1,49 @@
 cd ~/Deskotp/FYP
 
-Step 1: raw data qc
+Step 1: raw data qc (fastQC)
 Input file: RNAseq/raw_data/Aero_1/Aero_1_1.fq.gz
 run fastqc
 Output file: RNAseq/raw_data/Aero_1/Aero_1_1fastqc.html
 
-Step 2: raw data trimming (first 10 bp)
-Input file: RNAseq/raw_data/Aero_1/Aero_1_1.fq.gz
+Step 2: raw data trimming (first 10 bp) (fastp)
+Input file: RNAseq/raw_data/Aero_1/Aero_1_1.fq.gz Aero_1_2.fq.gz
 run $ sh/test.sh
-Output file: RNAseq/trimmed/triAero_1_1.fq
+Output file: RNAseq/trimmed/triAero_1_1.fq Aero_1_2.fq
 
-Step 3: creat genome index
+Step 3: trimmed qc (fastQC)
+Input file: RNAseq/trimmed/triAero_1_1.fq.gz
+run $ sh/fastqc.sh
+Output file: RNAseq/trimmed/triAero_1_1fastqc.html
+
+Step 4: creat genome index (STAR)
 Input file: JJZ00M.fna out.gtf
-run $ STAR --runThreadN 5 --runMode genomeGenerate --genomeDir Indexed --genomeFastaFiles Annotation/Annotation/JJZ00M.fna --sjdbGTFfile /Users/maxwellhou/Desktop/FYP/Annotation/Annotation/out.gtf
-*JJZ00M.fna modified from JJZ00.fna by reformating into correct fasta formate (new line before < and after)
+*JJZ00M.fna modified from JJZ00.fna by reformating into correct fasta formate (new line before < and after) #Cased major problem with only one assembly being mapped
 *out.gtf created from JJZ00.gff using agat_convert_sp_gff2gtf.pl --gff JJZ00.gtf -o out.gtf
+run $ STAR --runThreadN 5 --runMode genomeGenerate --genomeDir Indexed --genomeFastaFiles Annotation/Annotation/JJZ00M.fna --sjdbGTFfile /Users/maxwellhou/Desktop/FYP/Annotation/Annotation/out.gtf
 Output file: Indexed/
 
-Step 4: map (alignment)
+Step 5: map (alignment) (STAR)
 Input file: Indexed/ RNAseq/trimmed/triAero_1_1.fq triAero_1_2.fq
 run $ sh/ma.sh
 Output file: Mapped/Aero_1/
 
-Step 5: sort by coordinate and index bam file
+Step 6: sort by coordinate and index bam file (samtools)
 Input file: Mapped/Aero_1/Aligned.out.bam
 run $ sh/sort.sh
-Output file: Mapped/Aero_1/Aero_1sorted.bam
+Output file: Mapped/Aero_1/Aero_1sorted.bam Aero_1sorted.bam.bai
 
-Step 6: .bam qc #not runned yet, waiting for .bed file
+Step 7: .bam qc (RSeQC) #not completely runned yet, waiting for .bed file
 Input file: Mapped/Aero_1/Aero_1sorted.bam ag.bed
+run $ sh/bamqc.sh
+Output file: Mapped/Aero_1/Aero_1/qc/
 
-Step 7: create count tabel
+Step 8: create count tabel (HTseq)
+Input file: Mapped/Aero_1/Aero_1sorted.bam Mapped/JJZ00M.gff
+*JJZ00M.gff created by removing the FASTA sequences at the end using sed...COMMOND TO BE FILLED IN
+run $ sh/count.sh
+Output file: Count/Aero_1count.csv
 
-Step 8: DE analysis
-???Are _1 _2 _3 biological replicates or techniqule replicates
+Step 9: DE analysis (DEseq2)
+Input file: Count/Aero_1count.csv ./namecode.csv
+sourse > Deseq analysis.R (in Rstuido)
+Output file: Rplots/
