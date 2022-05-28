@@ -8,10 +8,10 @@ library('dendextend')
 setwd('~/Desktop/FYP')
 
 #Directory where the htseq-cout output is
-directory = "~/Desktop/FYP/Count"
+directory = "~/Desktop/FYP/CountR"
 
 #Creating the dds
-sampleFiles = grep("",list.files(directory),value=TRUE)
+sampleFiles = grep("",list.files(directory),value=TRUE)[1:6]
 sampleCondition = c(sub("(.*Aero).*","\\1",sampleFiles[1:3]), sub("(.*Ana).*","\\1",sampleFiles[4:6]))
 sampleTable = data.frame(sampleName = c(substr(sampleFiles[1:3], 1, 6), substr(sampleFiles[4:6], 1, 5)),
                          fileName = sampleFiles,
@@ -330,9 +330,7 @@ pheatmap(assay(ntd)[select,], cluster_rows=FALSE, show_rownames=FALSE, cluster_c
 
 
 
-#Make figure more informative
 
-#Tuesday: report figure, ask the work during break
 
 #Sequence distance of pucBA genes
 seq = DNAStringSet(namecode$seq)
@@ -362,3 +360,35 @@ pheatmap(complexes,
 plot(tree, horiz = T, main = 'sequence dendrogram')
 
 plot_horiz.dendrogram(tree)
+
+#For poster
+complexes = assay(ntd)[namecode[, 1], 4:6]
+colnames(complexes) = c('Sample_1', 'Sample_2', 'Sample_3')
+complexes = as.data.frame(complexes)
+complexes['Globle Median',] = colMedians(assay(ntd))[1:3]
+rownames(complexes)[1:16] = namecode[, 2]
+tem = rowSums(complexes)
+complexes = complexes[order(tem, decreasing = T),]
+pheatmap(complexes,
+         cluster_rows = FALSE,
+         show_rownames = T,
+         cluster_cols = FALSE,
+         main = 'pucBA unclustered',
+         angle_col = 0)
+
+par(mar = c(5, 12, 5, 12))
+plot(tree, horiz = T, main = 'sequence dendrogram')
+
+plot_horiz.dendrogram(tree)
+
+#full puc dendrogram
+fullPuc = read.csv('fullPUC.csv')
+aaseq  = AAStringSet(fullPuc$pro)
+aaseq = AlignSeqs(aaseq)
+dmatrix = DistanceMatrix(aaseq, type = 'dist')
+tree = IdClusters(dmatrix, cutoff = 10, method = "NJ", showPlot = F, type = "dendrogram")
+tree = as.dendrogram(tree)
+labels(tree) = fullPuc[labels(tree), 2]
+par(cex = 0.5)
+plot(tree, horiz = T)
+
