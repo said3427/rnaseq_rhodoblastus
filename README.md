@@ -1,7 +1,7 @@
 # Globle Transcriptomic Analysis on *Rhodoblastus acidophilus*
 Repository for detailed codes and commands used in the project
 
-Each section below is in the same sequence and names the same as in the methodology section. All codes are to be runned a command lines. For each sample command, sample name Aero_1 is used as an example. All custom codes for this project are link in the text below, like so [demo.code](demo.code).
+Each section below is in the same sequence and names the same as in the methodology section. All codes are to be run as command lines. For each sample command, sample name Aero_1 is used as an example. All custom codes for this project are link in the text below, like so [demo.code](demo.code).
 
 ## 1. Raw data processing
 The raw data is first quality checked using [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). Custom shell script [fastqc.sh](fastqc.sh) is used to automatically apply this step for all samples.
