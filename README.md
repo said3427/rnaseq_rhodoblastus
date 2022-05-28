@@ -1,9 +1,15 @@
 # Globle Transcriptomic Analysis on *Rhodoblastus acidophilus*
 Repository for detailed codes and commands used in the project, aimed for a reproducible workflow.
 
-Each section below is in the same sequence and names the same as in the methodology section. All codes are to be run as command lines. For each sample command, sample name Aero_1 is used as an example. All custom codes for this project are link in the text below, like so [demo.code](demo.code).
+Each section below is in the same sequence and names the same as in the methodology section. All codes are to be run a command lines. For each sample command, sample name Aero_1 is used as an example. All custom codes for this project are linked in the text below, like so [demo.code](demo.code).
 
-## 1. Raw data processing
+## 1. Prerequisite packages
+All packages, except R packages, used in this project are stored in [conda.config.yml](conda.config.yml). This file can be used to directly create `conda` environment, as shown below, for all analysis illustrated.
+```
+conda env create -f environment.yml
+```
+
+## 2. Raw data processing
 The raw data is first quality checked using [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). Custom shell script [fastqc.sh](fastqc.sh) is used to automatically apply this step for all samples.
 ```
 fastqc Aero_1_1.fq
@@ -16,7 +22,7 @@ The `FastQC` reports show there are adaptor sequences remained from each sequenc
 ```
 fastp -i raw_data/Aero_1/Aero_1_1.fq.gz -I raw_data/Aero_1/Aero_1_2.fq.gz -o trimmed/triAero_1.fq -O trimmed/triAero_2.fq -f 10 -F 10
 ```
-## 2. *De Novo* Transcriptomic Assembly
+## 3. *De Novo* Transcriptomic Assembly
 The sequences after adapter trimming where further marked for random sequencing errors using [Rcorrector](https://github.com/mourisl/Rcorrector). 
 ```
 run_rcorrector.pl -1 trimmed/triAero_1_1.fq -2 trimmed/triAero_1_2.fq -od rcorr/Aero_1/ -t 14
@@ -35,7 +41,7 @@ sh/fmerfilter.sh
  ```
 The --samples_file [samples.txt](samples.txt) specify all RNA sequences being used.
 
-## 3. Identification and adidition of novel transcripts and pucBA complexes found in NCBI database to genome sequences and genome annotation
+## 4. Identification and adidition of novel transcripts and pucBA complexes found in NCBI database to genome sequences and genome annotation
 
 The assembled transcriptome and the pucBA operon genes found in NCBI database are annotated using [Prokka](https://github.com/tseemann/prokka).
 ```
@@ -99,7 +105,7 @@ cat tem.fasta pucBA.fasta > updated.fasta
 Rscript newgffmerge.R
 ```
 
-## 4. Gene ontology annotation and pathway enrichment analysis
+## 5. Gene ontology annotation and pathway enrichment analysis
 
 The `.gene_trans.map` is required for gene ontology annotation and file is created using custom r script [trans_map.R](trans_map.R).
 ```
