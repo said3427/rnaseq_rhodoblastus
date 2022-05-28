@@ -3,25 +3,39 @@ Repository for detailed codes and commands used in the project, aimed for a repr
 
 Each section below is in the same sequence and names the same as in the methodology section. All codes are to be run a command lines. For each sample command, sample name Aero_1 is used as an example. All custom codes for this project are linked in the text below, like so [demo.code](demo.code).
 
-## 1. Prerequisite packages
+## 1. Prerequisite packages and setup
 All packages, except R packages, used in this project are stored in [conda.config.yml](conda.config.yml). This file can be used to directly create `conda` environment, as shown below, for all analysis illustrated.
 ```
-conda env create -f environment.yml
+conda env create -f conda.config.yml
+```
+All shell scripts `.sh` should be configured for running using the command below.
+```
+chmod u+x sh/shellScriptName.sh
 ```
 
 ## 2. Raw data processing
-The raw data is first quality checked using [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/). Custom shell script [fastqc.sh](fastqc.sh) is used to automatically apply this step for all samples.
+The raw data is first quality checked using [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
 ```
 fastqc Aero_1_1.fq
+```
+Custom shell script [fastqc.sh](fastqc.sh) is used to automatically apply this step for all samples.
+```
+sh/fastqc.sh
 ```
 All `FastQC` reports are combined together using [MultiQC](https://multiqc.info).
 ```
 multiqc .
 ```
-The `FastQC` reports show there are adaptor sequences remained from each sequence, judging from `per base sequence content`. Thus, each sequence are trimmed by length using [fastp](https://github.com/OpenGene/fastp). Custom shell script [trim.sh](trim.sh) is used to automatically apply this step for all samples.
+The `FastQC` reports show there are adaptor sequences remained from each sequence, judging from `per base sequence content`. Thus, each sequence are trimmed by length using [fastp](https://github.com/OpenGene/fastp).
 ```
 fastp -i raw_data/Aero_1/Aero_1_1.fq.gz -I raw_data/Aero_1/Aero_1_2.fq.gz -o trimmed/triAero_1.fq -O trimmed/triAero_2.fq -f 10 -F 10
 ```
+Custom shell script [trim.sh](trim.sh) is used to automatically apply this step for all samples.
+```
+sh/trim.sh
+```
+The trimmed sequences are checked again using `FastQC` for potential problems.
+
 ## 3. *De Novo* Transcriptomic Assembly
 The sequences after adapter trimming where further marked for random sequencing errors using [Rcorrector](https://github.com/mourisl/Rcorrector). 
 ```
