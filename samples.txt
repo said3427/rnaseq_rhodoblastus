@@ -1,0 +1,6 @@
+Aero    Aero_1  Aero_1/unfixrm_triAero_1_1.cor.fq.gz    Aero_1/unfixrm_triAero_1_2.cor.fq.gz
+Aero    Aero_2  Aero_1/unfixrm_triAero_2_1.cor.fq.gz    Aero_1/unfixrm_triAero_2_2.cor.fq.gz
+Aero    Aero_3  Aero_1/unfixrm_triAero_3_1.cor.fq.gz    Aero_1/unfixrm_triAero_3_2.cor.fq.gz
+Ana Ana_1 Ana_1/unfixrm_triAna_1_1.cor.fq.gz    Ana_1/unfixrm_triAna_1_2.cor.fq.gz
+Ana Ana_2 Ana_1/unfixrm_triAna_2_1.cor.fq.gz    Ana_1/unfixrm_triAna_2_2.cor.fq.gz
+Ana Ana_3 Ana_1/unfixrm_triAna_3_1.cor.fq.gz    Ana_1/unfixrm_triAna_3_2.cor.fq.gz
