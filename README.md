@@ -1,12 +1,12 @@
 # Globle Transcriptomic Analysis on *Rhodoblastus acidophilus*
 Repository for detailed codes and commands used in the project, aimed for a reproducible workflow.
 
-Each section below is in the same sequence and names the same as in the methodology section. All codes are to be run a command lines. For each sample command, sample name Aero_1 is used as an example. All custom codes for this project are linked in the text below, like so [demo.code](demo.code).
+Each section below is in the same sequence as in the methodology section. All command are to be run a command lines. For each sample command, sample name Aero_1 is used as an example. All custom scripts for this project are linked in the text below, like so [demo.code](demo.code).
 
 ## 1. Prerequisite packages and setup
-All packages, except R packages, used in this project are stored in [conda.config.yml](conda.config.yml). This file can be used to directly create `conda` environment, as shown below, for all analysis illustrated.
+All packages, except `R` packages, used in this project are stored in [condaEnvironment.yml](condaEnvironment.yml). This file can be used to directly create `conda` environment, as shown below, for all analysis illustrated.
 ```
-conda env create -f conda.config.yml
+conda env create -f condaEnvironment.yml
 ```
 All shell scripts `.sh` should be configured for running using the command below.
 ```
@@ -119,7 +119,52 @@ cat tem.fasta pucBA.fasta > updated.fasta
 Rscript newgffmerge.R
 ```
 
-## 5. Gene ontology annotation and pathway enrichment analysis
+## 5. Alignment, count table generation, and DE analysis
+The alignment of each reads to the updated annotated genome was done using [Bowtie 2](http://bowtie-bio.sourceforge.net/bowtie2/index.shtml).
+```
+bowtie2 -x B2/index -1 RNAseq/rcorr/Aero_1/unfixrm_triAero_1_1.cor.fq -2 RNAseq/rcorr/${dataDir[i-1]}/unfixrm_triAero_1_2.cor.fq -S B2/Aero_1.sam -p 15 --rf
+```
+The file conversion from `.sam` to sorted and indexed `.bam` is carried out using [samtools](https://www.htslib.org).
+```
+samtools view -bS Aero_1.sam > Aero_1.bam
+
+rm Aero_1.sam
+
+samtools sort Aero_1.bam -o Aero_1.bam
+
+samtools index Aero_1.bam
+```
+The count table was then generated using the alignment file by using [HTseq](https://htseq.readthedocs.io/en/master/).
+```
+htseq-count -r pos -t CDS -i ID -n 7 -s reverse Aero_1.bam updated.gff -c $Aero_1count.csv
+```
+- Non-unique alignment reads excluded from counting, as HTseq default behaviour.
+
+For the alignment, file conversion, and generation of count table, Custom shell script [b2.sh](b2.sh) is used to automatically apply this step for all samples.
+```
+sh/b2.sh
+```
+The alignment were quality checked using [RSeQC](http://rseqc.sourceforge.net). The `bam_stat` and `infer_expriment` QC reports are generated. 
+```
+bam_stat.py -i Aero_1.bam > qc/stat/Aero_1bam_stat.txt
+
+infer_experiment.py -i Aero_1.bam -r ~/Desktop/FYP/Annotation/Annotation/ag.bed > qc/infer_experiment/Aero_1infer_experiment.txt
+```
+The counting matrix (read assignment) is quality checked using [MultiQC](https://multiqc.info).
+```
+MultiQC *
+```
+
+Finally, the statistical analysis including raw count normalization and differential analysis was done in R using DEseq2 following standard protocol using custom R script [Deseqanalysis.R](Deseqanalysis.R)
+```
+Rscript Deseq analysis.R
+```
+ 
+Here, the same procedure was run using the original annotated genome for comparison to identify any introduced error during the update of genome annotation and genome sequences.
+
+
+
+## 6. Gene ontology annotation and pathway enrichment analysis
 
 The `.gene_trans.map` is required for gene ontology annotation and file is created using custom r script [trans_map.R](trans_map.R).
 ```
@@ -159,4 +204,10 @@ Trinotate Trinotate.sqlite LOAD_swissprot_blastx blastx.outfmt6
 Trinotate Trinotate.sqlite report > trinotate_annotation_report.xls
 ```
 
-The pathway enrichment analysis is carried out using…
+The pathway enrichment analysis is carried out using [GOseq](https://bioconductor.org/packages/release/bioc/html/goseq.html) in r using custom R script [goseq.R](goseq.R).
+```
+Rscript goseq.R
+```
+
+## 7. Dendrogram construction
+The R package [Biostrings](https://bioconductor.org/packages/release/bioc/html/Biostrings.html), [DECIPHER](http://www2.decipher.codes), and [dendextend](https://cran.r-project.org/web/packages/dendextend/vignettes/dendextend.html) was used with agglomeration method set as Neighbor-Joining method for the construction. The code for its construction is stored in R script [Deseqanalysis.R](Deseqanalysis.R).
