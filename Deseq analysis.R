@@ -4,6 +4,7 @@ library('pheatmap')
 library('apeglm')
 library('DECIPHER')
 library('dendextend')
+library('protr')
 
 setwd('~/Desktop/FYP')
 
@@ -362,8 +363,8 @@ plot(tree, horiz = T, main = 'sequence dendrogram')
 plot_horiz.dendrogram(tree)
 
 #For poster
-complexes = assay(ntd)[namecode[, 1], 4:6]
-colnames(complexes) = c('Sample_1', 'Sample_2', 'Sample_3')
+complexes = assay(ntd)[namecode[, 1], 1:3]
+colnames(complexes) = c('Aero_1', 'Aero_2', 'Aero_3')
 complexes = as.data.frame(complexes)
 complexes['Globle Median',] = colMedians(assay(ntd))[1:3]
 rownames(complexes)[1:16] = namecode[, 2]
@@ -382,13 +383,39 @@ plot(tree, horiz = T, main = 'sequence dendrogram')
 plot_horiz.dendrogram(tree)
 
 #full puc dendrogram
-fullPuc = read.csv('fullPUC.csv')
+fullPuc = read.csv('fullPUCReport.csv')
 aaseq  = AAStringSet(fullPuc$pro)
 aaseq = AlignSeqs(aaseq)
 dmatrix = DistanceMatrix(aaseq, type = 'dist')
 tree = IdClusters(dmatrix, cutoff = 10, method = "NJ", showPlot = F, type = "dendrogram")
 tree = as.dendrogram(tree)
 labels(tree) = fullPuc[labels(tree), 2]
-par(cex = 0.5)
+labelColor = as.numeric(as.factor(fullPuc$sourse))
+labelColor = labelColor[order.dendrogram(tree)]
+labels_colors(tree) = labelColor
+tree = branches_color(tree, k = 1, col = 'black')
+par(cex = 1, mar = c(2, 1, 1, 10))
 plot(tree, horiz = T)
+
+#Calculate similarity matrix
+fullPuc = read.csv('fullPUCReport.csv')
+proSeq = fullPuc[1:16, ]
+proSeq = proSeq$pro[seq(1, 16, 2)]
+parSeqSim(proSeq)
+
+#For report
+complexes = assay(ntd)[namecode[, 1],]
+rownames(complexes) = namecode[, 2]
+tem = rowSums(complexes)
+complexes = complexes[order(tem, decreasing = T),]
+df = as.data.frame(colData(dds)[,"condition"])
+colnames(df) = 'Condition'
+rownames(df) = colnames(dds)
+pheatmap(complexes,
+         cluster_rows = FALSE,
+         show_rownames = T,
+         cluster_cols = FALSE,
+         annotation_col = df,
+         main = '',
+         angle_col = 0)
 
